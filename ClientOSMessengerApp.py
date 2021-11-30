@@ -1,10 +1,10 @@
-# SE 3313A Project - Ali Malik, Ali Chouman, Yazan Al-Lahham, Andrei Popescu
+# import the required modules
 from socket import AF_INET, socket, SOCK_STREAM
 from threading import Thread
 import tkinter
 
 
-# This function must be threaded.
+# method to recieve messages from the thread
 def receive():
     while True:
         try:
@@ -14,8 +14,8 @@ def receive():
         except OSError:
             break
 
-
-def send(event=None):  # Binders pass the event.
+# send messages to the socket
+def send(event=None):
     msg = my_msg.get()
     my_msg.set("")      # Clears text field.
     global current_room
