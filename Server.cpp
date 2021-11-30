@@ -18,7 +18,7 @@ private:
     Socket &socket;
     ByteArray data;
 	//Indicates no. of chat rooms
-	int chatRoomNum;
+	int roomNum;
 	int port;
     //Deteermines to terminate or not to terminate
     bool& terminate;
@@ -44,7 +44,7 @@ public:
 
     const int GetChatRoom()
     {
-        return chatRoomNum;
+        return roomNum;
     }
 
     virtual long ThreadMain()
@@ -62,8 +62,8 @@ public:
 
 			std::string chatRoomString = data.ToString();
 			chatRoomString = chatRoomString.substr(1, chatRoomString.size() - 1);
-			chatRoomNum = std::stoi(chatRoomString);
-			std::cout << "Current chat room number from socket.Read(): " << chatRoomNum << std::endl;
+			roomNum = std::stoi(chatRoomString);
+			std::cout << "Current chat room number from socket.Read(): " << roomNum << std::endl;
 
 			while(!terminate) {
 				int socketResult = socket.Read(data);
@@ -91,8 +91,8 @@ public:
 					std::string stringChat = recv.substr(1, recv.size() - 1);
 
 					// Parse the integer after the forward slash character, representing the chat room number.
-					chatRoomNum = std::stoi(stringChat);
-					std::cout << "A client just joined room " << chatRoomNum << std::endl;
+					roomNum = std::stoi(stringChat);
+					std::cout << "A client just joined room " << roomNum << std::endl;
 					continue;
 				}
 
@@ -100,7 +100,7 @@ public:
 				clientBlock.Wait();
 				for (int i = 0; i < socketThreadsHolder.size(); i++) {
 					SocketThread *clientSocketThread = socketThreadsHolder[i];
-					if (clientSocketThread->GetChatRoom() == chatRoomNum)
+					if (clientSocketThread->GetChatRoom() == roomNum)
 					{
 						Socket &clientSocket = clientSocketThread->GetSocket();
 						ByteArray sendBa(recv);
