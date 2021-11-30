@@ -21,7 +21,7 @@ def send(event=None):
     global current_room
 
     if message == "{quit}":
-        client_socket.send(bytes(client_username.get() + " has closed OS Messenger App!", "utf8"))
+        client_socket.send(bytes(client_username.get() + " left the room", "utf8"))
         client_socket.close()
         window.quit()
         return
@@ -40,7 +40,7 @@ def switch_rooms():
     current_room = ((chatRoomSelected.get()).split(' '))[2]
     client_socket.send(bytes("/" + current_room, "utf8"))
     message_list.delete(0, tk.END)
-    message_list.insert(tk.END, "You are now in room " + str(current_room))
+    message_list.insert(tk.END, "Current room: " + str(current_room))
     message_list.see(tk.END)
 
 # global variables to keep track of the total chat rooms and the current room the client is using
@@ -68,7 +68,7 @@ message_list.pack()
 messages_frame.pack()
 
 # label and input field for the username field
-username_label = tk.Label(window, text="Enter username: ")
+username_label = tk.Label(window, text="Your username: ")
 username_label.pack()
 username_field = tk.Entry(window, textvariable=client_username)
 username_field.pack()
