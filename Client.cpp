@@ -27,10 +27,13 @@ public:
 
 	virtual long ThreadMain()
 	{
+		// open the socket
+		socket.Open();
+
 		std::cout << "Type 'done' to exit: ";
 		std::cout.flush();
 
-		//get data from the byte array
+		// get data from the byte array
 		std::getline(std::cin, data_str);
 		data = ByteArray(data_str);
 
