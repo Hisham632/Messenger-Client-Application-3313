@@ -14,19 +14,13 @@ using namespace Sync;
 class SocketThread : public Thread
 {
 private:
-    // Reference to our connected socket.
+    //Soket Reference
     Socket &socket;
-
-    // A byte array for the data we are receiving and sending.
     ByteArray data;
-
-	// Global indicator of number of chat rooms.
+	//Indicates no. of chat rooms
 	int chatRoomNum;
-
-	// The port our server is running on.
 	int port;
-
-    // Reference to termination.
+    //Deteermines to terminate or not to terminate
     bool& terminate;
 
     // Holder for SocketThread pointers.
