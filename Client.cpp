@@ -27,11 +27,10 @@ public:
 
 	virtual long ThreadMain()
 	{
-		int result = socket.Open();
-		std::cout << "Please input your data (done to exit): ";
+		std::cout << "Type 'done' to exit: ";
 		std::cout.flush();
 
-		// Get the data
+		//get data from the byte array
 		std::getline(std::cin, data_str);
 		data = ByteArray(data_str);
 
@@ -48,10 +47,7 @@ public:
 
 int main(void)
 {
-	// Welcome the user 
-	std::cout << "SE3313 Lab 4 Client" << std::endl;
-
-	// Create our socket
+	// Create socket
 	Socket socket("127.0.0.1", 3005);
 	ClientThread clientThread(socket);
 	while(1)
