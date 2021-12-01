@@ -17,7 +17,7 @@ private:
     //Soket Reference
     Socket &socket;
     ByteArray data;
-	//Indicates no. of chat rooms
+	//Indicates no. chat room
 	int roomNum;
 	int port;
     //Deteermines to terminate or not to terminate
@@ -120,53 +120,33 @@ class ServerThread : public Thread
 private:
 	//socket reference
     SocketServer &server;
-
-    ///SocketThread pointers
+	//number of chat rooms
+	int  numOfRooms;
+	int port;
     std::vector<SocketThread*> socketThrHolder;
 
-	// Given socket port number.
-	int port;
-
-	// Given chats number.
-	int numberRooms;
-
-	// Flag for termination.
+    //Deteermines to terminate or not to terminate
     bool terminate = false;
 
-	/* Alternate Version Using Delete, but requires ArrayList encapsulation.
-	Socket **socketsHolder = new Socket*[10];
-	SocketThread **sckThreadsHolder = new SocketThread*[10];*/
-
 public:
-    ServerThread(SocketServer& server, int numberRooms, int port)
-    : server(server), numberRooms(numberRooms), port(port)
+    ServerThread(SocketServer& server, int  numOfRooms, int port)
+    : server(server), numOfRooms(numOfRooms), port(port)
     {}
 
     ~ServerThread()
     {
-		// Cleanup
-		//this->terminationEvent.Wait();
-
-		// MAKE SURE TO CLOSE ALL SOCKETS (assigning null / deallocating memory).
-		//std::vector<Socket*>().swap(socketsHolder);
-		//std::vector<SocketThread*>().swap(sckThreadsHolder);
-
-		// delete[] socketsHolder;
-		// delete[] sckThreadsHolder;
-
-
-        // Close the client sockets.
+		//loops over client threads when exiting
         for (auto thread : socketThrHolder)
         {
             try
             {
-                // Close the socket.
+                //close the socket
                 Socket& toClose = thread->GetSocket();
                 toClose.Close();
             }
             catch (...)
             {
-                // This will catch all exceptions.
+                //This will catch all exceptions
             }
         }
 		std::vector<SocketThread*>().swap(socketThrHolder);
@@ -178,29 +158,17 @@ public:
         while (true)
         {
             try {
-				// Stringify port number.
-                std::string stringPortNum = std::to_string(port);
-                std::cout << "FlexWait/Natural blocking call on client!" <<std::endl;
-
-				// Main owner semaphore to block other semaphores by name.
-                Semaphore serverBlock(stringPortNum, 1, true);
-
-				// Front-end receives number of chats through socket.
-                std::string allChats = std::to_string(numberRooms) + '\n';
-
-				// Byte array conversion for number of chats.
+				//convert port number to string
+                std::string portNum = std::to_string(port);
+                Semaphore serverBlock(portNum, 1, true);
+				//receives total number of chats through socket
+                std::string allChats = std::to_string(numOfRooms) + '\n';
+				//converts no. of chats to ByteArray
                 ByteArray allChats_conv(allChats);
-
-
-                // Wait for a client socket connection
                 Socket sock = server.Accept();
-
-				// Send number of chats.
+				//send number of total chats
                 sock.Write(allChats_conv);
                 Socket* newConnection = new Socket(sock);
-
-				//socketsHolder.push_back(newConnection);
-
                 // Pass a reference to this pointer into a new socket thread.
                 Socket &socketReference = *newConnection;
                 socketThrHolder.push_back(new SocketThread(socketReference, std::ref(socketThrHolder), terminate, port));
