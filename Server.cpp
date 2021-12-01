@@ -152,7 +152,7 @@ public:
 		std::vector<SocketThread*>().swap(socketThrHolder);
         terminate = true;
     }
-
+	
     virtual long ThreadMain()
     {
         while (true)
@@ -168,23 +168,23 @@ public:
                 Socket sock = server.Accept();
 				//send number of total chats
                 sock.Write(allChats_conv);
+				//initialize new socket
                 Socket* newConnection = new Socket(sock);
-                // Pass a reference to this pointer into a new socket thread.
                 Socket &socketReference = *newConnection;
                 socketThrHolder.push_back(new SocketThread(socketReference, std::ref(socketThrHolder), terminate, port));
             }
-			// Catch string-thrown exception.
+			//catch string exceptions
             catch (std::string error)
             {
-                std::cout << "ERROR: " << error << std::endl;
-				// Exit thread function.
+                std::cout << "error:" << error << std::endl;
+				//exit thread
                 return 1;
             }
-			// In case of unexpected shutdown.
+			//in case of unexpected shutdown
 			catch (TerminationException terminationException)
 			{
-				std::cout << "Server has shut down!" << std::endl;
-				// Exit with exception thrown.
+				std::cout << "The Server has shut down!" << std::endl;
+				//exit and throw exception
 				return terminationException;
 			}
         }
@@ -192,30 +192,22 @@ public:
 };
 
 int main(void) {
-	// AWS port.
+	//port initializer
     int port = 3005;
+	//max rooms allowed for server(can be adjusted)
+    int rooms = 10;
 
-	// Admin sets value of number of chat rooms for the server.
-    int rooms = 20;
+    std::cout << "I am Server" << std::endl
+		<<"~ enter 'done' to quit" << std::endl;
 
-    std::cout << "SE 3313 Server" << std::endl
-		<<"Type done to quit the server..." << std::endl;
-
-	// Create our server.
+	//initialize server
     SocketServer server(port);
-
-	// Need a thread to perform sever operations.
+	//initialize thread
     ServerThread st(server, rooms, port);
-
-	// This will wait for input to shutdown the server
+	//shutdown handlers
 	FlexWait cinWaiter(1, stdin);
 	cinWaiter.Wait();
 	std::cin.get();
-
-	// Cleanup, including exiting clients, when the user presses enter
-
-	// Shut down and clean up the server
 	server.Shutdown();
-
-    std::cout << "Good-bye!" << std::endl;
+    std::cout << "Gracefully Terminated!" << std::endl;
 }
